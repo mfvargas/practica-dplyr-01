@@ -1,0 +1,120 @@
+---
+title: "Práctica de uso del paquete dplyr"
+author: "Manuel Vargas"
+format: html
+toc: true
+lang: es
+theme: cyborg
+---
+
+# Introducción
+Este documento contiene algunos ejemplos de uso de las funciones del paquete dplyr de [Tidyverse](https://www.tidyverse.org/)
+
+# Carga de paquetes
+
+```{r}
+#| label: carga-paquetes
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(palmerpenguins)
+library(knitr)
+```
+
+
+# Carga de datos
+
+```{r}
+#| label: carga-datos
+#| message: false
+#| warning: false
+
+delitos_2023 <- read_csv(
+  "estadisticaspoliciales2023.csv",
+  locale = locale(encoding = "WINDOWS-1252")
+)
+```
+
+# select()
+
+## Ejemplo 1
+
+```{r}
+#| label: select-01
+
+# select(penguins, species, bill_length_mm, sex)
+
+penguins |>
+  select(species, bill_length_mm, sex) |>
+  head(10) |>
+  kable()
+```
+
+## Ejemplo 2
+
+```{r}
+#| label: select-02
+
+penguins |>
+  select(
+    especie = species,
+    longitud_pico_mm = bill_length_mm,
+    sex
+  ) |>
+  head(10) |>
+  kable()
+```
+
+# filter()
+
+## Ejemplo 1
+
+```{r}
+#| label: filter-01
+
+penguins |>
+  select(species, island, sex) |>
+  filter(species == "Adelie" &
+           sex == "male" & island == "Torgersen") |>
+  kable()
+```
+
+## Ejemplo 2
+
+```{r}
+#| label: filter-02
+
+# Delitos cometidos a vehículos en el cantón de Montes de Oca
+delitos_2023 |>
+  select(Delito, SubDelito, Victima, SubVictima, Canton, Distrito) |>
+  filter(Canton == "MONTES DE OCA" & Victima == "VEHICULO") |>
+  kable()
+
+```
+
+## Ejemplo 3
+
+```{r}
+#| label: filter-03
+
+# Asaltos cometidos en San Pedro de Montes de Oca
+delitos_2023 |>
+  select(Delito, SubDelito, Victima, SubVictima, Canton, Distrito) |>
+  filter(Delito == "ASALTO" & Distrito == "SAN PEDRO" & Canton == "MONTES DE OCA") |>
+  kable()
+```
+
+## Ejemplo 4
+
+```{r}
+#| label: filter-04
+
+# Asaltos y homicidios cometidos en San Pedro de Montes de Oca
+delitos_2023 |>
+  select(Delito, SubDelito, Victima, SubVictima, Canton, Distrito) |>
+  filter((Distrito == "SAN PEDRO" & Canton == "MONTES DE OCA") & 
+           (Delito == "ASALTO" | Delito == "HOMICIDIO")) |>
+  kable()
+```
+
